@@ -1,0 +1,6 @@
+# Ignora i file eseguibili generati dalla compilazione
+gioco
+*.exe
+
+# Ignora i file temporanei di sistema del Mac
+.DS_Store
