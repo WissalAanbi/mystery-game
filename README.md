@@ -13,5 +13,6 @@ gcc main.c -o gioco -I ./raylib/src -L ./raylib/src -lraylib -framework OpenGL -
 \`\`\`
 
 ## 🎮 Controls
-* **Arrow keys**:to move the character
+* **A,S,D and W keys**:to move the character
+* **R keys**:to collect the objects
 * **ESC**: close the game 
