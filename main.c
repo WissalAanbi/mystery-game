@@ -9,6 +9,15 @@ int main(void) {
     //personaggio
     Rectangle pers={750, 0, 20.0,20.0};
 
+
+
+    //prova sfondo 
+    Texture2D sfondo = LoadTexture("/Users/wissal/Downloads/stanza1.png");
+    SetTextureFilter(sfondo, TEXTURE_FILTER_POINT);
+
+
+
+
     //inventario
     Rectangle inv={20, 400, 180.0 ,30.0};
     int inventario[6]={0, 0, 0, 0, 0, 0};
@@ -44,11 +53,6 @@ int main(void) {
         {210, 290, 80.0, 30.0},   
         {510, 290, 80.0, 30.0},   
     
-        // Fila in alto 
-        {360, 130, 80.0, 30.0},
-        {210, 130, 80.0, 30.0},   
-        {510, 130, 80.0, 30.0},
-
         //cattedra 
         {340, 380, 120.0, 50.0},
         //libreria 
@@ -198,7 +202,21 @@ int main(void) {
 
 
         BeginDrawing();
-            ClearBackground(DARKGRAY); // Colore di sfondo
+
+    //prova sfondo
+    Rectangle sorgente = { 0.0f, 0.0f, (float)sfondo.width, (float)sfondo.height };
+
+    // 2. Forza l'immagine a rimpicciolirsi ed entrare esattamente in 800x450
+    Rectangle destinazione = { 0.0, 0.0, 800.0, 450.0 }; 
+
+    // 3. Punto di ancoraggio (in alto a sinistra)
+    Vector2 origine = { 0.0, 0.0 };
+
+    // 4. Disegna lo sfondo perfettamente adattato alla stanza
+    DrawTexturePro(sfondo, sorgente, destinazione, origine, 0.0f, WHITE);
+
+
+        //ClearBackground(DARKGRAY); // Colore di sfondo
         //PRIMA STANZA 
             //tavolo ovale alla finestra 
             DrawEllipse(400, 60, 70.0, 30.0, BROWN); 
