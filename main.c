@@ -12,7 +12,7 @@ int main(void) {
 
 
     //prova sfondo 
-    Texture2D sfondo = LoadTexture("/Users/wissal/Downloads/stanza1.png");
+    Texture2D sfondo = LoadTexture("/Users/wissal/Downloads/stanza1sfondo2.png");
     SetTextureFilter(sfondo, TEXTURE_FILTER_POINT);
 
 
