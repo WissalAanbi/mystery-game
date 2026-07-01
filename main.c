@@ -7,7 +7,7 @@ int main(void) {
     //velocità del personaggio
     float speed= 4.0;
     //personaggio
-    Rectangle pers={750, 0, 20.0,20.0};
+    Rectangle pers={700, 150, 25.0,50.0};
 
 
 
@@ -26,39 +26,39 @@ int main(void) {
     bool cassettoneControllato = false; 
     bool stanzaCompletata= false; 
 
+    //gabbia 
+    Rectangle gabbia={675, 320, 100.0, 100.0};
+    //impedire il passaggio a sinistra 
+    Rectangle muro={40, 150, 30.0, 50.0};
     //armadio con pietra 
-    Rectangle armadio={0, 10, 40.0, 80.0};
+    Rectangle armadio={70, 50, 80.0, 80.0};
     //cassettone con lettera 
-    Rectangle cassettone={760, 230, 40.0, 80.0};
+    Rectangle cassettone={650, 215, 100.0, 60.0};
 
-    //box per la lavagna 
-    Rectangle lav={200.0, 395.0, 90.0, 20.0};
-    //box per lo specchio
-    Rectangle sp={620.0, 390.0, 35.0, 10.0};
-    //box per il tavolo ovale
-    Rectangle Tovale={330, 30, 140.0, 60.0};
+    //box per il muro sopra
+    Rectangle Tovale={150, 100, 600.0, 30.0};
     //prove per coprire specchio e lavagna 
-    Rectangle specchio= {607.0,378.0, 35.0,22.0};
-    Rectangle lavagna= {165.0, 370.0, 80.0, 50.0};
+    Rectangle specchio= {545.0,324.0, 66.0,150.0};
+    Rectangle lavagna= {190.0, 320.0, 70.0, 50.0};
 
     //array per gli ostacoli 
     Rectangle ostacoli[]={
         //banco centrale e i suoi laterali 
-        {360, 210, 80.0, 30.0},   
-        {210, 210, 80.0, 30.0},   
-        {510, 210, 80.0, 30.0},   
+        {363, 180, 80.0, 20.0},   
+        {240, 180, 80.0, 20.0},   
+        {490, 180, 80.0, 20.0},   
     
         // Fila in basso
-        {360, 290, 80.0, 30.0},
-        {210, 290, 80.0, 30.0},   
-        {510, 290, 80.0, 30.0},   
+        {363, 260, 80.0, 30.0},
+        {240, 260, 80.0, 30.0},   
+        {490, 260, 80.0, 30.0},   
     
         //cattedra 
-        {340, 380, 120.0, 50.0},
+        {345, 375, 120.0, 50.0},
         //libreria 
-        {0, 110, 40.0, 200.0},
-        //cassettoni 
-        {760, 90, 40.0, 80.0}
+        {0, 180, 185.0, 150.0},
+        //cassettone 
+        {760, 0, 40.0, 450.0}
     };
     int numOstacoli = sizeof(ostacoli) /sizeof(ostacoli[0]);
     // Ciclo di gioco 
@@ -114,7 +114,13 @@ int main(void) {
                 if (IsKeyDown(KEY_S)) pers.y -= speed;
                 if (IsKeyDown(KEY_W)) pers.y += speed;
        } 
-
+       //collisione con la gabbia
+       if(CheckCollisionRecs(pers, gabbia)){
+                if (IsKeyDown(KEY_D)) pers.x -= speed;
+                if (IsKeyDown(KEY_A)) pers.x += speed;
+                if (IsKeyDown(KEY_S)) pers.y -= speed;
+                if (IsKeyDown(KEY_W)) pers.y += speed;
+       } 
        //collisione con la specchio 
        if(CheckCollisionRecs(pers, specchio)){
                 if (IsKeyDown(KEY_D)) pers.x -= speed;
@@ -148,6 +154,14 @@ int main(void) {
 
        //collisione con il cassettone 
        if(CheckCollisionRecs(pers, cassettone)){
+                if (IsKeyDown(KEY_D)) pers.x -= speed;
+                if (IsKeyDown(KEY_A)) pers.x += speed;
+                if (IsKeyDown(KEY_S)) pers.y -= speed;
+                if (IsKeyDown(KEY_W)) pers.y += speed;
+       }
+
+       //collisione muro sinistro
+       if(CheckCollisionRecs(pers, muro)){
                 if (IsKeyDown(KEY_D)) pers.x -= speed;
                 if (IsKeyDown(KEY_A)) pers.x += speed;
                 if (IsKeyDown(KEY_S)) pers.y -= speed;
@@ -203,41 +217,32 @@ int main(void) {
 
         BeginDrawing();
 
-    //prova sfondo
-    Rectangle sorgente = { 0.0f, 0.0f, (float)sfondo.width, (float)sfondo.height };
+        //prova sfondo
+        Rectangle sorgente = { 0.0f, 0.0f, (float)sfondo.width, (float)sfondo.height };
 
-    // 2. Forza l'immagine a rimpicciolirsi ed entrare esattamente in 800x450
-    Rectangle destinazione = { 0.0, 0.0, 800.0, 450.0 }; 
+        // 2. Forza l'immagine a rimpicciolirsi ed entrare esattamente in 800x450
+        Rectangle destinazione = { 0.0, 0.0, 800.0, 450.0 }; 
 
-    // 3. Punto di ancoraggio (in alto a sinistra)
-    Vector2 origine = { 0.0, 0.0 };
+        // 3. Punto di ancoraggio (in alto a sinistra)
+        Vector2 origine = { 0.0, 0.0 };
 
-    // 4. Disegna lo sfondo perfettamente adattato alla stanza
-    DrawTexturePro(sfondo, sorgente, destinazione, origine, 0.0f, WHITE);
+        // 4. Disegna lo sfondo perfettamente adattato alla stanza
+        DrawTexturePro(sfondo, sorgente, destinazione, origine, 0.0f, WHITE);
 
 
         //ClearBackground(DARKGRAY); // Colore di sfondo
-        //PRIMA STANZA 
-            //tavolo ovale alla finestra 
-            DrawEllipse(400, 60, 70.0, 30.0, BROWN); 
-            //creazione banchi
+        //PRIMA STANZA  
+            /*creazione banchi
             for(int i=0; i<numOstacoli; i++){
                 DrawRectangleRec(ostacoli[i], BROWN);
-            }
-            //lavagna 
-            Vector2 Vlav={lav.width / 2.0, lav.height/ 2.0}; //ruota dal centro 
-            DrawRectanglePro(lav, Vlav, 35, BLACK);
-            //specchio
-            Vector2 Vsp={sp.width / 2.0, sp.height/ 2.0}; //ruota dal centro
-            DrawRectanglePro(sp, Vsp, -40, GOLD);
-            //armadio 
-            DrawRectangleRec(armadio, RED);
-            //cassettone 
-            DrawRectangleRec(cassettone, PURPLE);
+            } */
+            
+            
 
             //personaggio
             DrawRectangleRec(pers, BLUE);
-            
+
+
             //blocco dell'inventario
             DrawRectangleRec(inv, PINK);
             //blocchi dell'inventario con 6 slot 
