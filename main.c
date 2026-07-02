@@ -4,19 +4,48 @@ int main(void) {
     // per aprire la finestra (Larghezza, Altezza, Titolo)
     InitWindow(800, 450, "Test");
     SetTargetFPS(60);
+
     //velocità del personaggio
-    float speed= 4.0;
+    float speed= 3.0;
     //personaggio
-    Rectangle pers={700, 150, 25.0,50.0};
+    Rectangle pers={280, 300, 45.0,80.0};
+
+    //prova personaggio
+    Texture2D texFermo    = LoadTexture("/Users/wissal/Downloads/Frontale.png");
+
+    Texture2D texDestra   = LoadTexture("/Users/wissal/Downloads/Laterale2.png");
+    Texture2D texDestra1  = LoadTexture("/Users/wissal/Downloads/D1.png"); 
+    Texture2D texDestra2  = LoadTexture("/Users/wissal/Downloads/D2.png"); 
+
+    Texture2D texSinistra   = LoadTexture("/Users/wissal/Downloads/Laterale.png");
+    Texture2D texSinistra1  = LoadTexture("/Users/wissal/Downloads/S1.png"); 
+    Texture2D texSinistra2  = LoadTexture("/Users/wissal/Downloads/S2.png"); 
+
+    Texture2D texSu       = LoadTexture("/Users/wissal/Downloads/Back.png");
+    
+    SetTextureFilter(texFermo, TEXTURE_FILTER_POINT); //per non sgranare
+    SetTextureFilter(texDestra, TEXTURE_FILTER_POINT);
+    SetTextureFilter(texDestra1, TEXTURE_FILTER_POINT);
+    SetTextureFilter(texDestra2, TEXTURE_FILTER_POINT);
+    SetTextureFilter(texSinistra, TEXTURE_FILTER_POINT);
+    SetTextureFilter(texSinistra1, TEXTURE_FILTER_POINT);
+    SetTextureFilter(texSinistra2, TEXTURE_FILTER_POINT);
+    SetTextureFilter(texSu, TEXTURE_FILTER_POINT);  
+
+    //il personaggio all'inzio deve sempre essere fermo 
+    Texture2D *textureCorrente = &texFermo;
+
+    //variabili per animare il personaggio
+    int frameCounter = 0;
+    int animazioneFrame = 0;
+    int velocitaAnimazione = 10; // Cambia frame ogni 10 cicli 
+    int direzioneSpecifica = 0;  // 0: Fronte, 1: Destra, 2: Sinistra, 3: Retro
 
 
 
     //prova sfondo 
     Texture2D sfondo = LoadTexture("/Users/wissal/Downloads/stanza1sfondo2.png");
     SetTextureFilter(sfondo, TEXTURE_FILTER_POINT);
-
-
-
 
     //inventario
     Rectangle inv={20, 400, 180.0 ,30.0};
@@ -27,57 +56,107 @@ int main(void) {
     bool stanzaCompletata= false; 
 
     //gabbia 
-    Rectangle gabbia={675, 320, 100.0, 100.0};
+    Rectangle gabbia={685, 350, 80.0, 80.0};
     //impedire il passaggio a sinistra 
     Rectangle muro={40, 150, 30.0, 50.0};
     //armadio con pietra 
-    Rectangle armadio={70, 50, 80.0, 80.0};
+    Rectangle armadio={70, 50, 80.0, 50.0};
     //cassettone con lettera 
-    Rectangle cassettone={650, 215, 100.0, 60.0};
+    Rectangle cassettone={650, 220, 100.0, 25.0};
 
     //box per il muro sopra
-    Rectangle Tovale={150, 100, 600.0, 30.0};
+    Rectangle Tovale={160, 70, 600.0, 30.0};
     //prove per coprire specchio e lavagna 
-    Rectangle specchio= {545.0,324.0, 66.0,150.0};
-    Rectangle lavagna= {190.0, 320.0, 70.0, 50.0};
+    Rectangle specchio= {545.0,350.0, 66.0,100.0};
+    Rectangle lavagna= {190.0, 350.0, 70.0, 50.0};
 
     //array per gli ostacoli 
     Rectangle ostacoli[]={
         //banco centrale e i suoi laterali 
-        {363, 180, 80.0, 20.0},   
-        {240, 180, 80.0, 20.0},   
-        {490, 180, 80.0, 20.0},   
+        {375, 205, 50.0, 20.0},   
+        {255, 205, 50.0, 20.0},   
+        {505, 205, 50.0, 20.0},   
     
         // Fila in basso
-        {363, 260, 80.0, 30.0},
-        {240, 260, 80.0, 30.0},   
-        {490, 260, 80.0, 30.0},   
+        {375, 260, 50.0, 30.0},
+        {255, 260, 50.0, 30.0},   
+        {505, 260, 50.0, 30.0},   
     
         //cattedra 
-        {345, 375, 120.0, 50.0},
+        {345, 390, 120.0, 50.0},
         //libreria 
-        {0, 180, 185.0, 150.0},
+        {0, 200, 168.0, 135.0},
         //cassettone 
         {760, 0, 40.0, 450.0}
     };
     int numOstacoli = sizeof(ostacoli) /sizeof(ostacoli[0]);
     // Ciclo di gioco 
     while (!WindowShouldClose()) {
+        //di base il personaggio è fermo 
+        textureCorrente = &texFermo;
+
         //controllo se sto muovendo il personaggio 
-        //movimento su X
-        if(IsKeyDown(KEY_D)){
-            pers.x+=speed; 
-        }
-        if(IsKeyDown(KEY_A)){
-            pers.x-=speed; 
+        bool inMovimento = false;
+       //movimento su X 
+        if (IsKeyDown(KEY_D)) {
+            pers.x += speed; 
+            direzioneSpecifica = 1; 
+            inMovimento = true;
         }
         //movimento su Y
-        if(IsKeyDown(KEY_S)){
-            pers.y+=speed; 
+        else if (IsKeyDown(KEY_A)) {
+            pers.x -= speed; 
+            direzioneSpecifica = 2; 
+            inMovimento = true;
         }
-        if(IsKeyDown(KEY_W)){
-            pers.y-=speed; 
+
+        else if (IsKeyDown(KEY_S)) {
+            pers.y += speed; 
+            direzioneSpecifica = 0; 
+            inMovimento = true;
         }
+        else if (IsKeyDown(KEY_W)) {
+            pers.y -= speed; 
+            direzioneSpecifica = 3; 
+            inMovimento = true;
+        }
+
+        // animazione 
+        if (inMovimento) {
+            frameCounter++;
+            if (frameCounter >= velocitaAnimazione) {
+                frameCounter = 0;
+                // Alterna il frame 
+                animazioneFrame = (animazioneFrame == 0) ? 1 : 0; 
+            }
+        } else {
+            // Se fermo, resetta il timer e mostra la posa base
+            frameCounter = 0;
+            animazioneFrame = 0; 
+        }
+
+        
+        if (direzioneSpecifica == 1) { // destra
+            if (inMovimento) {
+                textureCorrente = (animazioneFrame == 0) ? &texDestra1 : &texDestra2;
+            } else {
+                textureCorrente = &texDestra;
+            }
+        }
+        else if (direzioneSpecifica == 2) { // sinistra
+            if (inMovimento) {
+                textureCorrente = (animazioneFrame == 0) ? &texSinistra1 : &texSinistra2;
+            } else {
+                textureCorrente = &texSinistra;
+            }
+        }
+        else if (direzioneSpecifica == 3) { // back 
+            textureCorrente = &texSu; // Espandibile se avrai passi per il retro
+        }
+        else { // FRONTE
+            textureCorrente = &texFermo; // Espandibile se avrai passi per il fronte
+        }
+
         //controllo la collisione contro le pareti 
         //sinistra
         if(pers.x<0){
@@ -232,23 +311,23 @@ int main(void) {
 
         //ClearBackground(DARKGRAY); // Colore di sfondo
         //PRIMA STANZA  
-            /*creazione banchi
-            for(int i=0; i<numOstacoli; i++){
-                DrawRectangleRec(ostacoli[i], BROWN);
-            } */
             
-            
-
-            //personaggio
-            DrawRectangleRec(pers, BLUE);
-
+    //personaggio 
+    if (textureCorrente->width > 0 && textureCorrente->height > 0) {
+    Rectangle sorgentePers = { 0.0f, 0.0f, (float)textureCorrente->width, (float)textureCorrente->height };
+    Rectangle destinazionePers = { pers.x, pers.y, pers.width, pers.height };
+    Vector2 originePers = { 0.0f, 0.0f };
+    DrawTexturePro(*textureCorrente, sorgentePers, destinazionePers, originePers, 0.0f, WHITE);
+    }   else {
+    DrawRectangleRec(pers, BLUE);
+    }
 
             //blocco dell'inventario
-            DrawRectangleRec(inv, PINK);
+            DrawRectangleRec(inv, (Color){ 44, 34, 31, 255 });
             //blocchi dell'inventario con 6 slot 
             for(int i=0; i<6; i++){
                 float slot= 22.5 + (i* 30.0);
-                DrawRectangleLines(slot, 402, 25, 25,LIGHTGRAY);
+                DrawRectangleLines(slot, 402, 25, 25,GRAY);
 
 
                 //gestione inventario per la pietra e la lettera
@@ -269,6 +348,15 @@ int main(void) {
         EndDrawing();
     }
 
+    UnloadTexture(sfondo);
+    UnloadTexture(texFermo);
+    UnloadTexture(texDestra);
+    UnloadTexture(texDestra1);
+    UnloadTexture(texDestra2);
+    UnloadTexture(texSinistra);
+    UnloadTexture(texSinistra1);
+    UnloadTexture(texSinistra2);
+    UnloadTexture(texSu);
     // per chiudere la finestra
     CloseWindow();
     return 0;
