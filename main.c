@@ -1,29 +1,27 @@
 #include "raylib/src/raylib.h"
 
 int main(void) {
-    // per aprire la finestra (Larghezza, Altezza, Titolo)
+    // Aprire la finestra (Larghezza, Altezza, Titolo)
     InitWindow(800, 450, "Test");
     SetTargetFPS(60);
 
-    //velocità del personaggio
-    float speed= 3.0;
-    //personaggio
-    Rectangle pers={280, 300, 45.0,80.0};
+    // Velocità del personaggio
+    float speed = 3.0;
+    // Personaggio
+    Rectangle pers = {280, 300, 45.0, 80.0};
 
-    //prova personaggio
-    Texture2D texFermo    = LoadTexture("/Users/wissal/Downloads/Frontale.png");
-
-    Texture2D texDestra   = LoadTexture("/Users/wissal/Downloads/Laterale2.png");
-    Texture2D texDestra1  = LoadTexture("/Users/wissal/Downloads/D1.png"); 
-    Texture2D texDestra2  = LoadTexture("/Users/wissal/Downloads/D2.png"); 
-
+    // Caricamento Texture Personaggio
+    Texture2D texFermo      = LoadTexture("/Users/wissal/Downloads/Frontale.png");
+    Texture2D texDestra     = LoadTexture("/Users/wissal/Downloads/Laterale2.png");
+    Texture2D texDestra1    = LoadTexture("/Users/wissal/Downloads/D1.png"); 
+    Texture2D texDestra2    = LoadTexture("/Users/wissal/Downloads/D2.png"); 
     Texture2D texSinistra   = LoadTexture("/Users/wissal/Downloads/Laterale.png");
     Texture2D texSinistra1  = LoadTexture("/Users/wissal/Downloads/S1.png"); 
     Texture2D texSinistra2  = LoadTexture("/Users/wissal/Downloads/S2.png"); 
-
-    Texture2D texSu       = LoadTexture("/Users/wissal/Downloads/Back.png");
+    Texture2D texSu         = LoadTexture("/Users/wissal/Downloads/Back.png");
     
-    SetTextureFilter(texFermo, TEXTURE_FILTER_POINT); //per non sgranare
+    // Filtri per non sgranare (Pixel Art)
+    SetTextureFilter(texFermo, TEXTURE_FILTER_POINT);
     SetTextureFilter(texDestra, TEXTURE_FILTER_POINT);
     SetTextureFilter(texDestra1, TEXTURE_FILTER_POINT);
     SetTextureFilter(texDestra2, TEXTURE_FILTER_POINT);
@@ -32,84 +30,65 @@ int main(void) {
     SetTextureFilter(texSinistra2, TEXTURE_FILTER_POINT);
     SetTextureFilter(texSu, TEXTURE_FILTER_POINT);  
 
-    //il personaggio all'inzio deve sempre essere fermo 
     Texture2D *textureCorrente = &texFermo;
 
-    //variabili per animare il personaggio
+    // Variabili per animazione
     int frameCounter = 0;
     int animazioneFrame = 0;
-    int velocitaAnimazione = 10; // Cambia frame ogni 10 cicli 
+    int velocitaAnimazione = 10; 
     int direzioneSpecifica = 0;  // 0: Fronte, 1: Destra, 2: Sinistra, 3: Retro
 
+    // Gestione Stanze 
+    int stanzaCorrente = 1;
 
-
-    //prova sfondo 
+    // Sfondi stanze
     Texture2D sfondo = LoadTexture("/Users/wissal/Downloads/stanza1sfondo2.png");
     SetTextureFilter(sfondo, TEXTURE_FILTER_POINT);
 
-    //inventario
-    Rectangle inv={20, 400, 180.0 ,30.0};
-    int inventario[6]={0, 0, 0, 0, 0, 0};
-    //CONTROLLO PER LA PRIMA STANZA
+    Texture2D sfondo2 = LoadTexture("/Users/wissal/Downloads/stanza2.png");
+    SetTextureFilter(sfondo2, TEXTURE_FILTER_POINT);
+
+    // Inventario
+    Rectangle inv = {20, 400, 180.0, 30.0};
+    int inventario[6] = {0, 0, 0, 0, 0, 0};
+
+    // Stato di gioco stanza 1
     bool armadioControllato = false;
     bool cassettoneControllato = false; 
-    bool stanzaCompletata= false; 
+    bool stanzaCompletata = false; 
 
-    //gabbia 
-    Rectangle gabbia={685, 350, 80.0, 80.0};
-    //impedire il passaggio a sinistra 
-    Rectangle muro={40, 150, 30.0, 50.0};
-    //armadio con pietra 
-    Rectangle armadio={70, 50, 80.0, 50.0};
-    //cassettone con lettera 
-    Rectangle cassettone={650, 220, 100.0, 25.0};
+    // Ostacoli specifici stanza 1
+    Rectangle gabbia = {685, 350, 80.0, 80.0};
+    Rectangle muro = {40, 150, 30.0, 50.0};
+    Rectangle armadio = {70, 50, 80.0, 50.0};
+    Rectangle cassettone = {650, 220, 100.0, 25.0};
+    Rectangle Tovale = {160, 70, 600.0, 30.0};
+    Rectangle specchio = {545.0, 350.0, 66.0, 100.0};
+    Rectangle lavagna = {190.0, 350.0, 70.0, 50.0};
 
-    //box per il muro sopra
-    Rectangle Tovale={160, 70, 600.0, 30.0};
-    //prove per coprire specchio e lavagna 
-    Rectangle specchio= {545.0,350.0, 66.0,100.0};
-    Rectangle lavagna= {190.0, 350.0, 70.0, 50.0};
-
-    //array per gli ostacoli 
-    Rectangle ostacoli[]={
-        //banco centrale e i suoi laterali 
-        {375, 205, 50.0, 20.0},   
-        {255, 205, 50.0, 20.0},   
-        {505, 205, 50.0, 20.0},   
-    
-        // Fila in basso
-        {375, 260, 50.0, 30.0},
-        {255, 260, 50.0, 30.0},   
-        {505, 260, 50.0, 30.0},   
-    
-        //cattedra 
-        {345, 390, 120.0, 50.0},
-        //libreria 
-        {0, 200, 168.0, 135.0},
-        //cassettone 
-        {760, 0, 40.0, 450.0}
+    Rectangle ostacoli[] = {
+        {375, 205, 50.0, 20.0}, {255, 205, 50.0, 20.0}, {505, 205, 50.0, 20.0},   
+        {375, 260, 50.0, 30.0}, {255, 260, 50.0, 30.0}, {505, 260, 50.0, 30.0},   
+        {345, 390, 120.0, 50.0}, {0, 200, 168.0, 135.0}, {760, 0, 40.0, 450.0}
     };
-    int numOstacoli = sizeof(ostacoli) /sizeof(ostacoli[0]);
-    // Ciclo di gioco 
-    while (!WindowShouldClose()) {
-        //di base il personaggio è fermo 
-        textureCorrente = &texFermo;
+    int numOstacoli = sizeof(ostacoli) / sizeof(ostacoli[0]);
 
-        //controllo se sto muovendo il personaggio 
+    // Ciclo di gioco 
+    while(!WindowShouldClose()) {
+        
         bool inMovimento = false;
-       //movimento su X 
+
+        // Input di movimento (comune a entrambe le stanze)
         if (IsKeyDown(KEY_D)) {
             pers.x += speed; 
             direzioneSpecifica = 1; 
             inMovimento = true;
         }
-        //movimento su Y
         else if (IsKeyDown(KEY_A)) {
             pers.x -= speed; 
             direzioneSpecifica = 2; 
             inMovimento = true;
         }
-
         else if (IsKeyDown(KEY_S)) {
             pers.y += speed; 
             direzioneSpecifica = 0; 
@@ -121,234 +100,188 @@ int main(void) {
             inMovimento = true;
         }
 
-        // animazione 
+        // Calcolo frame animazione
         if (inMovimento) {
             frameCounter++;
             if (frameCounter >= velocitaAnimazione) {
                 frameCounter = 0;
-                // Alterna il frame 
                 animazioneFrame = (animazioneFrame == 0) ? 1 : 0; 
             }
         } else {
-            // Se fermo, resetta il timer e mostra la posa base
             frameCounter = 0;
             animazioneFrame = 0; 
         }
 
-        
-        if (direzioneSpecifica == 1) { // destra
-            if (inMovimento) {
-                textureCorrente = (animazioneFrame == 0) ? &texDestra1 : &texDestra2;
-            } else {
-                textureCorrente = &texDestra;
-            }
+        // Assegnazione texture in base alla direzione
+        if (direzioneSpecifica == 1) {
+            textureCorrente = inMovimento ? ((animazioneFrame == 0) ? &texDestra1 : &texDestra2) : &texDestra;
         }
-        else if (direzioneSpecifica == 2) { // sinistra
-            if (inMovimento) {
-                textureCorrente = (animazioneFrame == 0) ? &texSinistra1 : &texSinistra2;
-            } else {
-                textureCorrente = &texSinistra;
-            }
+        else if (direzioneSpecifica == 2) {
+            textureCorrente = inMovimento ? ((animazioneFrame == 0) ? &texSinistra1 : &texSinistra2) : &texSinistra;
         }
-        else if (direzioneSpecifica == 3) { // back 
-            textureCorrente = &texSu; // Espandibile se avrai passi per il retro
+        else if (direzioneSpecifica == 3) {
+            textureCorrente = &texSu;
         }
-        else { // FRONTE
-            textureCorrente = &texFermo; // Espandibile se avrai passi per il fronte
+        else {
+            textureCorrente = &texFermo;
         }
 
-        //controllo la collisione contro le pareti 
-        //sinistra
-        if(pers.x<0){
-            pers.x=0;
-        }
-        //destra
-        if(pers.x>800-pers.width){
-            pers.x=800-pers.width;
-        }
-        //alto
-        if(pers.y < 0) {
-            pers.y = 0;
-        }
-        //basso
-        if(pers.y > 450 - pers.height) {
-            pers.y = 450 - pers.height;
-        }
-        //controllo la collisione con gli ostacoli
-        for(int i=0; i<numOstacoli; i++){
-            if(CheckCollisionRecs(pers, ostacoli[i])){
-                //devo fare l'opposto di quello che fanno i movimenti 
-                if (IsKeyDown(KEY_D)) pers.x -= speed;
-                if (IsKeyDown(KEY_A)) pers.x += speed;
-                if (IsKeyDown(KEY_S)) pers.y -= speed;
-                if (IsKeyDown(KEY_W)) pers.y += speed;
-
-                break;
-                }
-       }
-       //collisione con il tavolo ovale 
-       if(CheckCollisionRecs(pers, Tovale)){
-                if (IsKeyDown(KEY_D)) pers.x -= speed;
-                if (IsKeyDown(KEY_A)) pers.x += speed;
-                if (IsKeyDown(KEY_S)) pers.y -= speed;
-                if (IsKeyDown(KEY_W)) pers.y += speed;
-       } 
-       //collisione con la gabbia
-       if(CheckCollisionRecs(pers, gabbia)){
-                if (IsKeyDown(KEY_D)) pers.x -= speed;
-                if (IsKeyDown(KEY_A)) pers.x += speed;
-                if (IsKeyDown(KEY_S)) pers.y -= speed;
-                if (IsKeyDown(KEY_W)) pers.y += speed;
-       } 
-       //collisione con la specchio 
-       if(CheckCollisionRecs(pers, specchio)){
-                if (IsKeyDown(KEY_D)) pers.x -= speed;
-                if (IsKeyDown(KEY_A)) pers.x += speed;
-                if (IsKeyDown(KEY_S)) pers.y -= speed;
-                if (IsKeyDown(KEY_W)) pers.y += speed;
-       }
-       //collisione con la lavagna 
-       if(CheckCollisionRecs(pers, lavagna)){
-                if (IsKeyDown(KEY_D)) pers.x -= speed;
-                if (IsKeyDown(KEY_A)) pers.x += speed;
-                if (IsKeyDown(KEY_S)) pers.y -= speed;
-                if (IsKeyDown(KEY_W)) pers.y += speed;
-       } 
-
-       //collisione con l'inventario
-       if(CheckCollisionRecs(pers, inv)){
-                if (IsKeyDown(KEY_D)) pers.x -= speed;
-                if (IsKeyDown(KEY_A)) pers.x += speed;
-                if (IsKeyDown(KEY_S)) pers.y -= speed;
-                if (IsKeyDown(KEY_W)) pers.y += speed;
-       } 
-
-       //collisione con l'armadio 
-       if(CheckCollisionRecs(pers, armadio)){
-                if (IsKeyDown(KEY_D)) pers.x -= speed;
-                if (IsKeyDown(KEY_A)) pers.x += speed;
-                if (IsKeyDown(KEY_S)) pers.y -= speed;
-                if (IsKeyDown(KEY_W)) pers.y += speed;
-       } 
-
-       //collisione con il cassettone 
-       if(CheckCollisionRecs(pers, cassettone)){
-                if (IsKeyDown(KEY_D)) pers.x -= speed;
-                if (IsKeyDown(KEY_A)) pers.x += speed;
-                if (IsKeyDown(KEY_S)) pers.y -= speed;
-                if (IsKeyDown(KEY_W)) pers.y += speed;
-       }
-
-       //collisione muro sinistro
-       if(CheckCollisionRecs(pers, muro)){
-                if (IsKeyDown(KEY_D)) pers.x -= speed;
-                if (IsKeyDown(KEY_A)) pers.x += speed;
-                if (IsKeyDown(KEY_S)) pers.y -= speed;
-                if (IsKeyDown(KEY_W)) pers.y += speed;
-       }
-
-       //zona armadio da dove si puo cliccare
-       Rectangle zonaArmadio={armadio.x - 5, armadio.y -5, armadio.width + 10, armadio.height + 10};
-       //zona cassettone 
-       Rectangle zonaCassettone={cassettone.x - 5, cassettone.y -5, cassettone.width + 10, cassettone.height + 10};
-
-       //gestione collisioni quando si guadagnano gli oggetti 
-       if(CheckCollisionRecs(pers,zonaArmadio) && IsKeyPressed(KEY_R) && !armadioControllato){
-            for(int i=0; i<6; i++){
-                if(inventario[i]==0){
-                    inventario[i]=1; //ci aggiungo la pietra 
-                    armadioControllato=true; 
-                    break;
-                }
-            }
-       }
-       if(CheckCollisionRecs(pers,zonaCassettone) && IsKeyPressed(KEY_R) && !cassettoneControllato){
-            for(int i=0; i<6; i++){
-                if(inventario[i]==0){
-                    inventario[i]=2; //ci aggiungo la lettera 
-                    cassettoneControllato=true; 
-                    break;
-                }
-            }
-       }
-
-       //zona specchio 
-       Rectangle zonaSpecchio={specchio.x - 5, specchio.y -5, specchio.width + 20, specchio.height + 20};
-       //collisione e check per finire la stanza 1
-       if(CheckCollisionRecs(pers,zonaSpecchio) && IsKeyPressed(KEY_R) && !stanzaCompletata){
-            bool haPietra= false; 
-            int slotPietra= -1; 
-
-            for(int i=0; i<6; i++){
-                if (inventario[i]==1){
-                    haPietra= true;
-                    slotPietra= i;
-                    break;
-                }
-            }
-
-            if(haPietra){
-                stanzaCompletata= true; 
-                inventario[slotPietra]= 0; 
-            }
-       }
+        // Limiti dei bordi della finestra (comuni)
+        if (pers.x < 0) pers.x = 0;
+        if (pers.x > 800 - pers.width) pers.x = 800 - pers.width;
+        if (pers.y < 0) pers.y = 0;
+        if (pers.y > 450 - pers.height) pers.y = 450 - pers.height;
 
 
-        BeginDrawing();
-
-        //prova sfondo
-        Rectangle sorgente = { 0.0f, 0.0f, (float)sfondo.width, (float)sfondo.height };
-
-        // 2. Forza l'immagine a rimpicciolirsi ed entrare esattamente in 800x450
-        Rectangle destinazione = { 0.0, 0.0, 800.0, 450.0 }; 
-
-        // 3. Punto di ancoraggio (in alto a sinistra)
-        Vector2 origine = { 0.0, 0.0 };
-
-        // 4. Disegna lo sfondo perfettamente adattato alla stanza
-        DrawTexturePro(sfondo, sorgente, destinazione, origine, 0.0f, WHITE);
-
-
-        //ClearBackground(DARKGRAY); // Colore di sfondo
-        //PRIMA STANZA  
+        // --- LOGICA SPECIFICA STANZA 1 ---
+        if (stanzaCorrente == 1) {
             
-    //personaggio 
-    if (textureCorrente->width > 0 && textureCorrente->height > 0) {
-    Rectangle sorgentePers = { 0.0f, 0.0f, (float)textureCorrente->width, (float)textureCorrente->height };
-    Rectangle destinazionePers = { pers.x, pers.y, pers.width, pers.height };
-    Vector2 originePers = { 0.0f, 0.0f };
-    DrawTexturePro(*textureCorrente, sorgentePers, destinazionePers, originePers, 0.0f, WHITE);
-    }   else {
-    DrawRectangleRec(pers, BLUE);
-    }
-
-            //blocco dell'inventario
-            DrawRectangleRec(inv, (Color){ 44, 34, 31, 255 });
-            //blocchi dell'inventario con 6 slot 
-            for(int i=0; i<6; i++){
-                float slot= 22.5 + (i* 30.0);
-                DrawRectangleLines(slot, 402, 25, 25,GRAY);
-
-
-                //gestione inventario per la pietra e la lettera
-                if(inventario[i]==1){ //pietra
-                    DrawRectangle(slot + 3, 405, 19.0,19.0, RED);
+            // Collisioni ostacoli array
+            for (int i = 0; i < numOstacoli; i++) {
+                if (CheckCollisionRecs(pers, ostacoli[i])) {
+                    if (IsKeyDown(KEY_D)) pers.x -= speed;
+                    if (IsKeyDown(KEY_A)) pers.x += speed;
+                    if (IsKeyDown(KEY_S)) pers.y -= speed;
+                    if (IsKeyDown(KEY_W)) pers.y += speed;
+                    break;
                 }
-                if(inventario[i]==2){ //lettera
-                    DrawRectangle(slot + 3, 405, 19, 19, GOLD);
-                }
-
-                //messaggio se ho finito la prima stanza 
-                if(stanzaCompletata){
-                    DrawText("Stanza 1 completata!", 230, 200, 30, GOLD);
-                }
-
             }
+            
+            // Collisioni singoli elementi stanza 1
+            if (CheckCollisionRecs(pers, Tovale) || CheckCollisionRecs(pers, gabbia) || 
+                CheckCollisionRecs(pers, specchio) || CheckCollisionRecs(pers, lavagna) || 
+                CheckCollisionRecs(pers, inv) || CheckCollisionRecs(pers, armadio) || 
+                CheckCollisionRecs(pers, cassettone) || CheckCollisionRecs(pers, muro)) {
+                
+                if (IsKeyDown(KEY_D)) pers.x -= speed;
+                if (IsKeyDown(KEY_A)) pers.x += speed;
+                if (IsKeyDown(KEY_S)) pers.y -= speed;
+                if (IsKeyDown(KEY_W)) pers.y += speed;
+            }
+
+            // Zone di interazione
+            Rectangle zonaArmadio = {armadio.x - 5, armadio.y - 5, armadio.width + 10, armadio.height + 10};
+            Rectangle zonaCassettone = {cassettone.x - 5, cassettone.y - 5, cassettone.width + 10, cassettone.height + 10};
+            Rectangle zonaSpecchio = {specchio.x - 5, specchio.y - 5, specchio.width + 20, specchio.height + 20};
+
+            // Raccolta oggetti
+            if (CheckCollisionRecs(pers, zonaArmadio) && IsKeyPressed(KEY_R) && !armadioControllato) {
+                for (int i = 0; i < 6; i++) {
+                    if (inventario[i] == 0) {
+                        inventario[i] = 1; // Pietra
+                        armadioControllato = true; 
+                        break;
+                    }
+                }
+            }
+            if (CheckCollisionRecs(pers, zonaCassettone) && IsKeyPressed(KEY_R) && !cassettoneControllato) {
+                for (int i = 0; i < 6; i++) {
+                    if (inventario[i] == 0) {
+                        inventario[i] = 2; // Lettera
+                        cassettoneControllato = true; 
+                        break;
+                    }
+                }
+            }
+
+            // Risoluzione enigma dello specchio
+            if (CheckCollisionRecs(pers, zonaSpecchio) && IsKeyPressed(KEY_R) && !stanzaCompletata) {
+                int slotPietra = -1; 
+                for (int i = 0; i < 6; i++) {
+                    if (inventario[i] == 1) {
+                        slotPietra = i;
+                        break;
+                    }
+                }
+                if (slotPietra != -1) {
+                    stanzaCompletata = true; 
+                    inventario[slotPietra] = 0; // Rimuove la pietra
+                }
+            }
+
+            // CAMBIO STANZA
+            if (stanzaCompletata && IsKeyPressed(KEY_SPACE)) {
+                stanzaCorrente = 2;
+                // Resetta la posizione del personaggio all'ingresso della stanza 2
+                pers.x = 50;
+                pers.y = 200;
+            }
+        }
+        // --- LOGICA SPECIFICA STANZA 2 ---
+        else if (stanzaCorrente == 2) {
+            // Qui puoi inserire i nuovi ostacoli e interazioni della seconda stanza
+        }
+
+        // =====================================================================
+        // 2. DISEGNO GRAFICO (DRAW)
+        // =====================================================================
+        BeginDrawing();
+        ClearBackground(BLACK);
+
+        if (stanzaCorrente == 1) {
+            // Sfondo 1
+            Rectangle sorgente = { 0.0f, 0.0f, (float)sfondo.width, (float)sfondo.height };
+            Rectangle destinazione = { 0.0, 0.0, 800.0, 450.0 }; 
+            Vector2 origine = { 0.0, 0.0 };
+            DrawTexturePro(sfondo, sorgente, destinazione, origine, 0.0f, WHITE);
+
+            // Personaggio
+            if (textureCorrente->width > 0 && textureCorrente->height > 0) {
+                Rectangle sorgentePers = { 0.0f, 0.0f, (float)textureCorrente->width, (float)textureCorrente->height };
+                Rectangle destinazionePers = { pers.x, pers.y, pers.width, pers.height };
+                Vector2 originePers = { 0.0f, 0.0f };
+                DrawTexturePro(*textureCorrente, sorgentePers, destinazionePers, originePers, 0.0f, WHITE);
+            } else {
+                DrawRectangleRec(pers, BLUE);
+            }
+
+            // Interfaccia Inventario
+            DrawRectangleRec(inv, (Color){ 44, 34, 31, 255 });
+            for (int i = 0; i < 6; i++) {
+                float slot = 22.5 + (i * 30.0);
+                DrawRectangleLines(slot, 402, 25, 25, GRAY);
+
+                if (inventario[i] == 1) DrawRectangle(slot + 3, 405, 19.0, 19.0, RED);
+                if (inventario[i] == 2) DrawRectangle(slot + 3, 405, 19.0, 19.0, GOLD);
+            }
+
+            if (stanzaCompletata) {
+                DrawText("Stanza 1 completata!", 230, 180, 30, GOLD);
+                DrawText("Premi BACKSPACE per continuare", 210, 220, 20, WHITE);
+            }
+        } 
+        else if (stanzaCorrente == 2) {
+            // Sfondo 2
+            Rectangle sorgente2 = { 0.0f, 0.0f, (float)sfondo2.width, (float)sfondo2.height };
+            Rectangle destinazione2 = { 0.0, 0.0, 800.0, 450.0 }; 
+            Vector2 origine2 = { 0.0, 0.0 };
+            DrawTexturePro(sfondo2, sorgente2, destinazione2, origine2, 0.0f, WHITE);
+
+            // Personaggio nella stanza 2
+            if (textureCorrente->width > 0 && textureCorrente->height > 0) {
+                Rectangle sorgentePers = { 0.0f, 0.0f, (float)textureCorrente->width, (float)textureCorrente->height };
+                Rectangle destinazionePers = { pers.x, pers.y, pers.width, pers.height };
+                Vector2 originePers = { 0.0f, 0.0f };
+                DrawTexturePro(*textureCorrente, sorgentePers, destinazionePers, originePers, 0.0f, WHITE);
+            }
+            
+            // Disegna l'inventario anche nella stanza 2 se serve
+            DrawRectangleRec(inv, (Color){ 44, 34, 31, 255 });
+            for (int i = 0; i < 6; i++) {
+                float slot = 22.5 + (i * 30.0);
+                DrawRectangleLines(slot, 402, 25, 25, GRAY);
+                if (inventario[i] == 2) DrawRectangle(slot + 3, 405, 19.0, 19.0, GOLD);
+            }
+
+            DrawText("Benvenuto nella Stanza 2!", 20, 20, 20, GREEN);
+        }
 
         EndDrawing();
     }
 
+    // Unload delle risorse liberando la memoria GPU
     UnloadTexture(sfondo);
+    UnloadTexture(sfondo2);
     UnloadTexture(texFermo);
     UnloadTexture(texDestra);
     UnloadTexture(texDestra1);
@@ -357,7 +290,8 @@ int main(void) {
     UnloadTexture(texSinistra1);
     UnloadTexture(texSinistra2);
     UnloadTexture(texSu);
-    // per chiudere la finestra
+
     CloseWindow();
     return 0;
 }
+
