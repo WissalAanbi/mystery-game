@@ -39,7 +39,7 @@ int main(void) {
     int direzioneSpecifica = 0;  // 0: Fronte, 1: Destra, 2: Sinistra, 3: Retro
 
     // Gestione Stanze 
-    int stanzaCorrente = 1;
+    int stanzaCorrente = 0;
 
     // Sfondi stanze
     Texture2D sfondo = LoadTexture("/Users/wissal/Downloads/stanza1sfondo2.png");
@@ -47,6 +47,23 @@ int main(void) {
 
     Texture2D sfondo2 = LoadTexture("/Users/wissal/Downloads/stanza2.png");
     SetTextureFilter(sfondo2, TEXTURE_FILTER_POINT);
+
+    Texture2D sfondo3 = LoadTexture("/Users/wissal/Downloads/stanza3.png");
+    SetTextureFilter(sfondo3, TEXTURE_FILTER_POINT);
+
+    //schermate 
+    Texture2D schermata1 = LoadTexture("/Users/wissal/Downloads/schermata1.png");
+    SetTextureFilter(schermata1, TEXTURE_FILTER_POINT);
+
+    Texture2D schermata2 = LoadTexture("/Users/wissal/Downloads/schermata2.png");
+    SetTextureFilter(schermata2, TEXTURE_FILTER_POINT);\
+
+    Texture2D schermata3 = LoadTexture("/Users/wissal/Downloads/schermata3.png");
+    SetTextureFilter(schermata3, TEXTURE_FILTER_POINT);
+
+    //logo
+    Texture2D logo = LoadTexture("/Users/wissal/Downloads/logo.png");
+    SetTextureFilter(logo, TEXTURE_FILTER_POINT);
 
     // Inventario
     Rectangle inv = {20, 400, 180.0, 30.0};
@@ -132,8 +149,16 @@ int main(void) {
         if (pers.y < 0) pers.y = 0;
         if (pers.y > 450 - pers.height) pers.y = 450 - pers.height;
 
-
-        // --- LOGICA SPECIFICA STANZA 1 ---
+        //schermata di base per l'inizio del gioco
+        if (stanzaCorrente == 0){
+            if (IsKeyPressed(KEY_SPACE)) {
+                stanzaCorrente = 1;
+                // Resetta la posizione del personaggio all'ingresso della stanza 1
+                pers.x = 600;
+                pers.y = 200;
+            } 
+        }
+        // LOGICA SPECIFICA STANZA 1
         if (stanzaCorrente == 1) {
             
             // Collisioni ostacoli array
@@ -210,13 +235,48 @@ int main(void) {
         // --- LOGICA SPECIFICA STANZA 2 ---
         else if (stanzaCorrente == 2) {
             // Qui puoi inserire i nuovi ostacoli e interazioni della seconda stanza
+            if (IsKeyPressed(KEY_SPACE)) {
+                stanzaCorrente = 3;
+                // Resetta la posizione del personaggio all'ingresso della stanza 2
+                pers.x = 50;
+                pers.y = 200;
+            }
         }
 
+        else if (stanzaCorrente == 3){
+            //ostacoi terza stanza 
+            // Qui puoi inserire i nuovi ostacoli e interazioni della seconda stanza
+            if (IsKeyPressed(KEY_SPACE)) {
+                stanzaCorrente = 4;
+                // Resetta la posizione del personaggio all'ingresso della stanza 2
+                pers.x = 50;
+                pers.y = 200;
+            }
+        }
+        else if(stanzaCorrente == 4){
+            //
+            if (IsKeyPressed(KEY_SPACE)) {
+                stanzaCorrente = 5;
+                // Resetta la posizione del personaggio all'ingresso della stanza 2
+                pers.x = 50;
+                pers.y = 200;
+            }
+        }
         // =====================================================================
         // 2. DISEGNO GRAFICO (DRAW)
         // =====================================================================
         BeginDrawing();
         ClearBackground(BLACK);
+
+        if(stanzaCorrente == 0){
+            // schermata iniziale 
+            Rectangle sorgente0 = { 0.0f, 0.0f, (float)schermata1.width, (float)schermata1.height };
+            Rectangle destinazione0 = { 0.0, 0.0, 800.0, 450.0 }; 
+            Vector2 origine0 = { 0.0, 0.0 };
+            DrawTexturePro(schermata1, sorgente0, destinazione0, origine0, 0.0f, WHITE);
+
+            DrawText("Premere spazio per iniziare", 280, 160, 20, GOLD);
+        }
 
         if (stanzaCorrente == 1) {
             // Sfondo 1
@@ -250,7 +310,17 @@ int main(void) {
                 DrawText("Premi BACKSPACE per continuare", 210, 220, 20, WHITE);
             }
         } 
-        else if (stanzaCorrente == 2) {
+        else if(stanzaCorrente == 2){
+            // schermata iniziale 
+            Rectangle sorgente01 = { 0.0f, 0.0f, (float)schermata2.width, (float)schermata2.height };
+            Rectangle destinazione01 = { 0.0, 0.0, 800.0, 450.0 }; 
+            Vector2 origine01 = { 0.0, 0.0 };
+            DrawTexturePro(schermata2, sorgente01, destinazione01, origine01, 0.0f, WHITE);
+
+            DrawText("Premere spazio per passare alla stanza successiva", 280, 160, 20, GOLD);
+        }
+
+        else if (stanzaCorrente == 3) {
             // Sfondo 2
             Rectangle sorgente2 = { 0.0f, 0.0f, (float)sfondo2.width, (float)sfondo2.height };
             Rectangle destinazione2 = { 0.0, 0.0, 800.0, 450.0 }; 
@@ -265,7 +335,7 @@ int main(void) {
                 DrawTexturePro(*textureCorrente, sorgentePers, destinazionePers, originePers, 0.0f, WHITE);
             }
             
-            // Disegna l'inventario anche nella stanza 2 se serve
+            //inventario anche nella stanza 2 
             DrawRectangleRec(inv, (Color){ 44, 34, 31, 255 });
             for (int i = 0; i < 6; i++) {
                 float slot = 22.5 + (i * 30.0);
@@ -275,13 +345,55 @@ int main(void) {
 
             DrawText("Benvenuto nella Stanza 2!", 20, 20, 20, GREEN);
         }
+        else if(stanzaCorrente == 4){
+            // schermata iniziale 
+            Rectangle sorgente02 = { 0.0f, 0.0f, (float)schermata3.width, (float)schermata3.height };
+            Rectangle destinazione02 = { 0.0, 0.0, 800.0, 450.0 }; 
+            Vector2 origine02 = { 0.0, 0.0 };
+            DrawTexturePro(schermata3, sorgente02, destinazione02, origine02, 0.0f, WHITE);
 
+            DrawText("Premere spazio per passare alla stanza successiva", 280, 160, 20, GOLD);
+        }
+
+        else if(stanzaCorrente == 5){
+            //sfondo 3 
+            Rectangle sorgente3 = { 0.0, 0.0, (float)sfondo3.width, (float)sfondo3.height};
+            Rectangle destinazione3 = { 0.0, 0.0, 800.0, 450.0};
+            Vector2 origine3 = {0.0, 0.0};
+            DrawTexturePro(sfondo3, sorgente3, destinazione3, origine3, 0.0, WHITE);
+
+            // Personaggio nella stanza 3
+            if (textureCorrente->width > 0 && textureCorrente->height > 0) {
+                Rectangle sorgentePers = { 0.0f, 0.0f, (float)textureCorrente->width, (float)textureCorrente->height };
+                Rectangle destinazionePers = { pers.x, pers.y, pers.width, pers.height };
+                Vector2 originePers = { 0.0f, 0.0f };
+                DrawTexturePro(*textureCorrente, sorgentePers, destinazionePers, originePers, 0.0f, WHITE);
+            }
+
+            // inventario anche nella stanza 3
+            DrawRectangleRec(inv, (Color){ 44, 34, 31, 255 });
+            for (int i = 0; i < 6; i++) {
+                float slot = 22.5 + (i * 30.0);
+                DrawRectangleLines(slot, 402, 25, 25, GRAY);
+                if (inventario[i] == 2) DrawRectangle(slot + 3, 405, 19.0, 19.0, GOLD);
+            }
+        }
+
+        
+        Rectangle sorgente = { 0.0f, 0.0f, (float)logo.width, (float)logo.height };
+        Rectangle destinazione = {700.0f, 360.0f, 60.0f, 60.0f};
+        DrawTexturePro(logo, sorgente, destinazione, (Vector2){0,0}, 0.0f, WHITE);
         EndDrawing();
     }
 
     // Unload delle risorse liberando la memoria GPU
+    UnloadTexture(logo);
     UnloadTexture(sfondo);
     UnloadTexture(sfondo2);
+    UnloadTexture(sfondo3);
+    UnloadTexture(schermata1);
+    UnloadTexture(schermata2);
+    UnloadTexture(schermata3);
     UnloadTexture(texFermo);
     UnloadTexture(texDestra);
     UnloadTexture(texDestra1);
