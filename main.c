@@ -1,26 +1,26 @@
 #include "raylib/src/raylib.h"
 
 int main(void) {
-    // Aprire la finestra (Larghezza, Altezza, Titolo)
+    // to open the window 
     InitWindow(800, 450, "Test");
     SetTargetFPS(60);
 
-    // Velocità del personaggio
+    // speed of the character 
     float speed = 3.0;
-    // Personaggio
+    // Character
     Rectangle pers = {280, 300, 45.0, 80.0};
 
-    // Caricamento Texture Personaggio
-    Texture2D texFermo      = LoadTexture("/Users/wissal/Downloads/Frontale.png");
-    Texture2D texDestra     = LoadTexture("/Users/wissal/Downloads/Laterale2.png");
-    Texture2D texDestra1    = LoadTexture("/Users/wissal/Downloads/D1.png"); 
-    Texture2D texDestra2    = LoadTexture("/Users/wissal/Downloads/D2.png"); 
-    Texture2D texSinistra   = LoadTexture("/Users/wissal/Downloads/Laterale.png");
-    Texture2D texSinistra1  = LoadTexture("/Users/wissal/Downloads/S1.png"); 
-    Texture2D texSinistra2  = LoadTexture("/Users/wissal/Downloads/S2.png"); 
-    Texture2D texSu         = LoadTexture("/Users/wissal/Downloads/Back.png");
+    // character graphics 
+    Texture2D texFermo      = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/Frontale.png");
+    Texture2D texDestra     = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/Laterale2.png");
+    Texture2D texDestra1    = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/D1.png"); 
+    Texture2D texDestra2    = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/D2.png"); 
+    Texture2D texSinistra   = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/Laterale.png");
+    Texture2D texSinistra1  = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/S1.png"); 
+    Texture2D texSinistra2  = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/S2.png"); 
+    Texture2D texSu         = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/Back.png");
     
-    // Filtri per non sgranare (Pixel Art)
+    // to "fix" Pixel Art
     SetTextureFilter(texFermo, TEXTURE_FILTER_POINT);
     SetTextureFilter(texDestra, TEXTURE_FILTER_POINT);
     SetTextureFilter(texDestra1, TEXTURE_FILTER_POINT);
@@ -32,46 +32,46 @@ int main(void) {
 
     Texture2D *textureCorrente = &texFermo;
 
-    // Variabili per animazione
+    // animation 
     int frameCounter = 0;
     int animazioneFrame = 0;
     int velocitaAnimazione = 10; 
-    int direzioneSpecifica = 0;  // 0: Fronte, 1: Destra, 2: Sinistra, 3: Retro
+    int direzioneSpecifica = 0;  
 
-    // Gestione Stanze 
+    // room control 
     int stanzaCorrente = 0;
 
-    // Sfondi stanze
-    Texture2D sfondo = LoadTexture("/Users/wissal/Downloads/stanza1sfondo2.png");
+    // rooms 
+    Texture2D sfondo = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/stanza1sfondo2.png");
     SetTextureFilter(sfondo, TEXTURE_FILTER_POINT);
 
-    Texture2D sfondo2 = LoadTexture("/Users/wissal/Downloads/stanza2.png");
+    Texture2D sfondo2 = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/stanza2.png");
     SetTextureFilter(sfondo2, TEXTURE_FILTER_POINT);
 
-    // Schermate 
-    Texture2D schermata1 = LoadTexture("/Users/wissal/Downloads/schermata1.png");
+    // Screens 
+    Texture2D schermata1 = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/schermata1.png");
     SetTextureFilter(schermata1, TEXTURE_FILTER_POINT);
 
-    Texture2D schermata2 = LoadTexture("/Users/wissal/Downloads/schermata2.png");
+    Texture2D schermata2 = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/schermata2.png");
     SetTextureFilter(schermata2, TEXTURE_FILTER_POINT);
 
-    Texture2D schermata3 = LoadTexture("/Users/wissal/Downloads/schermata3.png");
+    Texture2D schermata3 = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/schermata3.png");
     SetTextureFilter(schermata3, TEXTURE_FILTER_POINT);
 
     // Logo
-    Texture2D logo = LoadTexture("/Users/wissal/Downloads/logo.png");
+    Texture2D logo = LoadTexture("/Users/wissal/Documents/Progetto-Gioco-Mystery/grafiche/logo.png");
     SetTextureFilter(logo, TEXTURE_FILTER_POINT);
 
-    // Inventario
+    // Inventory
     Rectangle inv = {20, 400, 180.0, 30.0};
     int inventario[6] = {0, 0, 0, 0, 0, 0};
 
-    // Stato di gioco stanza 1
+    // Game state Room 1
     bool armadioControllato = false;
     bool cassettoneControllato = false; 
     bool stanzaCompletata = false; 
 
-    // Ostacoli specifici stanza 1
+    // Specific obstacles Room 1
     Rectangle gabbia = {685, 350, 80.0, 80.0};
     Rectangle muro = {40, 150, 30.0, 50.0};
     Rectangle armadio = {70, 50, 80.0, 50.0};
@@ -87,11 +87,11 @@ int main(void) {
     };
     int numOstacoli = sizeof(ostacoli) / sizeof(ostacoli[0]);
 
-    // Stati di interazione nella stanza 3
+    // Interaction states in Room 3
     bool uovoControllato = false;
     bool stanzaCompletata2 = false; 
 
-    // Oggetti in collisione nella stanza 3
+    // Colliding objects in Room 3
     Rectangle piscina = {250, 220, 350.0, 90.0};
     Rectangle parete = {160, 70, 600.0, 30.0};
     Rectangle sinistra =  {0, 0, 100.0, 450.0};
@@ -101,12 +101,12 @@ int main(void) {
     Rectangle basso = {0, 400, 800.0, 30.0};
     Rectangle coppa = {477, 99, 30.0, 80.0};
 
-    // Ciclo di gioco 
+    // Game loop 
     while(!WindowShouldClose()) {
         
         bool inMovimento = false;
 
-        // Input di movimento
+        // Movement input
         if (IsKeyDown(KEY_D)) {
             pers.x += speed; 
             direzioneSpecifica = 1; 
@@ -128,7 +128,7 @@ int main(void) {
             inMovimento = true;
         }
 
-        // Calcolo frame animazione
+        // Animation frame calculation
         if (inMovimento) {
             frameCounter++;
             if (frameCounter >= velocitaAnimazione) {
@@ -140,7 +140,7 @@ int main(void) {
             animazioneFrame = 0; 
         }
 
-        // Assegnazione texture in base alla direzione
+        // Texture assignment based on direction
         if (direzioneSpecifica == 1) {
             textureCorrente = inMovimento ? ((animazioneFrame == 0) ? &texDestra1 : &texDestra2) : &texDestra;
         }
@@ -154,13 +154,13 @@ int main(void) {
             textureCorrente = &texFermo;
         }
 
-        // Limiti dei bordi della finestra
+        // Window boundary limits
         if (pers.x < 0) pers.x = 0;
         if (pers.x > 800 - pers.width) pers.x = 800 - pers.width;
         if (pers.y < 0) pers.y = 0;
         if (pers.y > 450 - pers.height) pers.y = 450 - pers.height;
 
-        // Schermata di base
+        // Base screen
         if (stanzaCorrente == 0){
             if (IsKeyPressed(KEY_SPACE)) {
                 stanzaCorrente = 1;
@@ -168,7 +168,7 @@ int main(void) {
                 pers.y = 200;
             } 
         }
-        // LOGICA SPECIFICA STANZA 1
+        // ROOM 1 SPECIFIC LOGIC
         else if (stanzaCorrente == 1) {
             
             for (int i = 0; i < numOstacoli; i++) {
@@ -199,7 +199,7 @@ int main(void) {
             if (CheckCollisionRecs(pers, zonaArmadio) && IsKeyPressed(KEY_R) && !armadioControllato) {
                 for (int i = 0; i < 6; i++) {
                     if (inventario[i] == 0) {
-                        inventario[i] = 1; // Pietra
+                        inventario[i] = 1; // Stone
                         armadioControllato = true; 
                         break;
                     }
@@ -208,7 +208,7 @@ int main(void) {
             if (CheckCollisionRecs(pers, zonaCassettone) && IsKeyPressed(KEY_R) && !cassettoneControllato) {
                 for (int i = 0; i < 6; i++) {
                     if (inventario[i] == 0) {
-                        inventario[i] = 2; // Lettera
+                        inventario[i] = 2; // Letter
                         cassettoneControllato = true; 
                         break;
                     }
@@ -240,10 +240,10 @@ int main(void) {
                 pers.y = 200;
             }
         }
-        // --- LOGICA SPECIFICA STANZA 3 ---
+        //ROOM 2 SPECIFIC LOGIC 
         else if (stanzaCorrente == 3){
             
-            // Collisioni ostacoli stanza 3
+            // Obstacle collisions in Room 2
             if (CheckCollisionRecs(pers, piscina) || CheckCollisionRecs(pers, parete) || 
                 CheckCollisionRecs(pers, sinistra) || CheckCollisionRecs(pers, destra) || 
                 CheckCollisionRecs(pers, sinistra2) || CheckCollisionRecs(pers, uovo) || 
@@ -255,22 +255,22 @@ int main(void) {
                 if (IsKeyDown(KEY_W)) pers.y += speed;
             }
 
-            // Zone di interazione ampliati per facilitare il rilevamento
+            // Expanded interaction zones for easier detection
             Rectangle zonaUovo = {uovo.x - 15, uovo.y - 15, uovo.width + 30, uovo.height + 30};
             Rectangle zonaPiscina = {piscina.x - 15, piscina.y - 15, piscina.width + 30, piscina.height + 30};
 
-            // 1. Interazione Uovo
+            // 1. Egg Interaction
             if (CheckCollisionRecs(pers, zonaUovo) && IsKeyPressed(KEY_R) && !uovoControllato) {
                 for (int i = 0; i < 6; i++) {
                     if (inventario[i] == 0) {
-                        inventario[i] = 3; // Oggetto uovo
+                        inventario[i] = 3; // Egg item
                         uovoControllato = true;
                         break;
                     }
                 }
             }
 
-            // 2. Interazione Piscina
+            // 2. Pool Interaction
             if (CheckCollisionRecs(pers, zonaPiscina) && IsKeyPressed(KEY_R) && !stanzaCompletata2) {
                 int slotOggettoUovo = -1;
                 for (int i = 0; i < 6; i++) {
@@ -286,17 +286,17 @@ int main(void) {
                 }
             }
 
-            // 3. Avanzamento (Funziona sia con BACKSPACE che con SPAZIO)
-            if (stanzaCompletata2 && (IsKeyPressed(KEY_BACKSPACE) || IsKeyPressed(KEY_SPACE))) {
+            // 3. Progression (Works with both BACKSPACE and SPACE)
+            if (stanzaCompletata2 && IsKeyPressed(KEY_SPACE)) {
                 stanzaCorrente = 4;
                 pers.x = 50;
                 pers.y = 200;
             }
         }
         
-        // =====================================================================
-        // 2. DISEGNO GRAFICO (DRAW)
-        // =====================================================================
+        
+        //DRAWING 
+        
         BeginDrawing();
         ClearBackground(BLACK);
 
@@ -324,9 +324,7 @@ int main(void) {
                 DrawRectangleRec(pers, BLUE);
             }
 
-            DrawRectangleLinesEx(pers, 2.0, RED);
-
-            // Interfaccia Inventario
+            // Inventory Interface
             DrawRectangleRec(inv, (Color){ 44, 34, 31, 255 });
             for (int i = 0; i < 6; i++) {
                 float slot = 22.5 + (i * 30.0);
@@ -350,7 +348,7 @@ int main(void) {
             DrawText("Welcome to Room 2", 250, 160, 30, WHITE);
         }
         else if (stanzaCorrente == 3) {
-            // Sfondo Stanza 2
+            // Room 2 background
             Rectangle sorgente2 = { 0.0f, 0.0f, (float)sfondo2.width, (float)sfondo2.height };
             Rectangle destinazione2 = { 0.0, 0.0, 800.0, 450.0 }; 
             Vector2 origine2 = { 0.0, 0.0 };
@@ -363,19 +361,20 @@ int main(void) {
                 DrawTexturePro(*textureCorrente, sorgentePers, destinazionePers, originePers, 0.0f, WHITE);
             }
             
+            /**if you want to see the space that the graphic of the character takes  
             DrawRectangleLinesEx(pers, 2.0, RED);
+            **/
 
-
-            // Inventario
+            // Inventory
             DrawRectangleRec(inv, (Color){ 44, 34, 31, 255 });
             for (int i = 0; i < 6; i++) {
                 float slot = 22.5 + (i * 30.0);
                 DrawRectangleLines(slot, 402, 25, 25, GRAY);
                 if (inventario[i] == 2) DrawRectangle(slot + 3, 405, 19.0, 19.0, GOLD);
-                if (inventario[i] == 3) DrawRectangle(slot + 3, 405, 19.0, 19.0, GREEN);
+                if (inventario[i] == 3) DrawRectangle(slot + 3, 405, 19.0, 19.0, WHITE);
             }
 
-            // Messaggio completamento stanza
+            // Room completion message
             if (stanzaCompletata2) {
                 DrawText("Room 2 completed!", 230, 180, 30, GOLD);
                 DrawText("click space to go on", 270, 220, 20, WHITE);
@@ -387,10 +386,10 @@ int main(void) {
             Vector2 origine02 = { 0.0, 0.0 };
             DrawTexturePro(schermata3, sorgente02, destinazione02, origine02, 0.0f, WHITE);
 
-            DrawText("To be continued", 220, 160, 50, BLACK);
+            DrawText("To be continued", 200, 160, 50, BLACK);
         }
 
-        // Logo costante in basso a destra
+        // Constant logo at bottom right
         Rectangle sorgente = { 0.0f, 0.0f, (float)logo.width, (float)logo.height };
         Rectangle destinazione = {700.0f, 360.0f, 60.0f, 60.0f};
         DrawTexturePro(logo, sorgente, destinazione, (Vector2){0,0}, 0.0f, WHITE);
@@ -398,7 +397,7 @@ int main(void) {
         EndDrawing();
     }
 
-    // Deallocazione risorse
+    // Deallocate resources
     UnloadTexture(logo);
     UnloadTexture(sfondo);
     UnloadTexture(sfondo2);
