@@ -1,10 +1,5 @@
-# My mystery game 📜✨
-This is a 2D game developed in C using the Raylib library for which the general documentation is already public. 
-
-## 🏛️ Plot Overview
-You wake up locked inside a mysterious classroom. To break free, you must navigate through 2 magical rooms with hidden objects and secrets inspired by the wizarding world of *Harry Potter*. 
-
-There are no direct clues in the game—your knowledge of the books and movies is the only key to figuring out how to interact with the environment and escape!
+# My mystery game 
+This is a 2D game developed in C (developed as a high school short project) using the Raylib library for which the general documentation is already public. 
 
 ## 🛠️ Requirements and Installation
 The game was developed on macOS and to compile it it is necessary to have installed the `gcc` compiler and the Raylib library. 
